@@ -5,58 +5,37 @@ from std_msgs.msg import Int16, Bool
 class Led_Liner:
     def __init__(self):
         self.devfile = "/dev/myled0"
-        self.subint = rospy.Subscriber("key_command", Int16, _int_callback)
-        self.subbool = rospy.Subscriber("key_console", Bool, _bool_callback)
+        self.subint = rospy.Subscriber("key_command", Int16, self._int_callback)
+        self.subbool = rospy.Subscriber("key_console", Bool, self._bool_callback)
 
-        self.pos = 0.0
-        self.vel = 1
-        self.direction = 1
-        self.done = True
         self.flash = False
+        self.senddevfile = "N\n"
+        self.key_cmd = "0"
+        self.key_con = True
 
     def _write_devfile(self, input_str):
         with open(self.devfile, mode="w") as dev:
-            dev.write(str(input_str)) + "\n")
+            dev.write(str(input_str) + "\n")
 
     def _int_callback(self, msg):
         self.key_cmd = msg.data
-        if self.key_cmd == 0:
-            if not self.vel == 0:
-                self.vel += self.direction
-        elif self.key_cmd == 1:
-            if not self.vel == 0:
-                self.vel -= self.direction
-        elif self.key_cmd == 2:
-            if not self.vel == 0:
-                self.vel = abs(self.vel)
-            else:
-                self.vel = 1
-        elif self.key_cmd == 3:
-            if not self.vel == 0:
-                self.vel = abs(self.vel) * -1
-            else:
-                self.vel = -1
 
     def _bool_callback(self, msg):
         self.key_con = msg.data
-        if self.done == self.key_con:
-            self.key_con = self.key_con
 
-    def _action():
-        if self.done == True:
-            self.pos += self.vel * 0.1
-            if self.pos > 8.0:
-                self.pos -= 8.0
-            elif self.pos < 0.0:
-                self.pos += 8.0
-            self.senddevfile = str(round(self.pos))
+    def _action(self):
+        if self.key_con:
+            self.flash = True
+            self.senddevfile = str(self.key_cmd) + "\n"
         else:
-            if self.flash = True:
-                self.senddevfile = "A"
+            if self.flash:
+                self.senddevfile = "A\n"
                 self.flash = False
+            else:
+                self.senddevfile = "4\n"
 
     def run(self):
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(5)
         while not rospy.is_shutdown():
             self._action()
             self._write_devfile(self.senddevfile)

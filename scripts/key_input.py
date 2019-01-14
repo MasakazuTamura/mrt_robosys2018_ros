@@ -20,7 +20,7 @@ def get1():
 
     k = inkey()
     # ^[A, ^[B, ^[C, or ^[D
-    elif k == "\x1b":
+    if k == "\x1b":
         for i in range(0, 2):
             k += inkey()
         if k == "\x1b[A":
@@ -40,26 +40,26 @@ def get1():
             key_num = -1
     # ^C
     elif k == "\x03":
-#        print("ctrl+c key down")
+        print("ctrl+c key down")
         key_num = -1
     # ^R
     elif k == "\x12":
-#        print("ctrl+r key down")
+        print("ctrl+r key down")
         key_num = -1
     # ^S
     elif k == "\x13":
-#        print("ctrl+s key down")
+        print("ctrl+s key down")
         key_num = -1
     else:
-#        print("unknown command")
-#        print("note: arrow key only")
+        print("unknown command")
+        print("note: arrow key only")
         key_num = -1
     return k, key_num
 
 if __name__ == '__main__':
     rospy.init_node("key_input")
     pubint = rospy.Publisher("key_command", Int16, queue_size=1)
-    pubbool = rospy.Publisher("key_console", Bool queue_size=1)
+    pubbool = rospy.Publisher("key_console", Bool, queue_size=1)
 
     rate = rospy.Rate(10)
     key_cmd = Int16()
@@ -79,7 +79,6 @@ if __name__ == '__main__':
             pubbool.publish(key_con)
         # ^[A, ^[B, ^[C, or ^[D
         elif not key_cmd.data < 0:
-            key_cmd_list.append(key_cmd.data)
             pubint.publish(key_cmd)
 
         rate.sleep()

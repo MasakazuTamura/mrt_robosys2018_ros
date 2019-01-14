@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="mrt_robosys2018_ros" name="led_liner" type="led_liner.py" required="true" />
+  <node pkg="mrt_robosys2018_ros" name="key_input" type="key_input.py" required="true" output="screen" />
+</launch>
